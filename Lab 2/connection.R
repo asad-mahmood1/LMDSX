@@ -9,4 +9,4 @@ dsn.database <- 'BLUDB'
 dsn.port <- '50000'
 dsn.protocol <- 'TCPIP'
 
-vetting.table = 'SUPPLYCHAIN'
+data.table = 'SUPPLYCHAIN'
