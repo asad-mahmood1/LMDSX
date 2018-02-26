@@ -28,7 +28,7 @@ Upon completing the lab, you will know how to:
 
 ### Step 3.  Create the notebook.
 
-> <img src="https://raw.githubusercontent.com/jpatter/DSX/master/Lab-1/images/DSX-create-notebook-from-url.png"/>
+> <img src="https://s10.postimg.org/bgmqgmfnt/Lab_1_New_Notebook.png"/>
 
 1. Click the `From URL` tab under `Create Notebook`.
 1. Give the notebook a name in the `Name` field, for example `Lab 1 - Exploratory Data Analysis` and optionally you can give it a description.
@@ -37,4 +37,4 @@ Upon completing the lab, you will know how to:
 
 ### Step 4.  Follow the instructions in the notebook.
 
-> <img src="https://raw.githubusercontent.com/jpatter/DSX/master/Lab-1/images/DSX-edit-notebook-begin.png"/>
+> <img src="https://s10.postimg.org/6uqm8brkp/Lab_1_Created_Notebook.png"/>
