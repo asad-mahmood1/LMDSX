@@ -13,7 +13,7 @@ Upon completing the lab, you will know how to:
 1. Create a Jupyter IPython notebook from a URL
 1. Establish a connection to DB2 Warehouse on Cloud
 1. Use a dataframe to read and manipulate tables
-1. Use Spark to query and analyze the dataset
+1. Use Spark to explore and analyze the dataset
 1. Write the modified dataset back to DB2 Warehouse on Cloud
 1. Close the database connection
 
