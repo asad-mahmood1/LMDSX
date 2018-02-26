@@ -11,21 +11,17 @@ source('connection.R', local = TRUE)
 # Named colors for the pie graph
 darkred <- rgb(139, 0, 0, maxColorValue = 255)
 darkgreen <- rgb(0, 100, 0, maxColorValue = 255)
-coral <- rgb(255, 127, 80, maxColorValue = 255)
-gray <- rgb(128, 128, 128, maxColorValue = 255)
-brown2 <- rgb(238, 59, 59, maxColorValue = 255)
 darkgoldenrod4 <- rgb(139, 101, 9, maxColorValue = 255)
-darkolivegreen4 <- rgb(110, 139, 61, maxColorValue = 255)
 
-# Vetting categories as strings
+# Severity categories as strings
 category.as.string <- function(catnum) {
   i <- as.integer(catnum)
   if(!is.na(i)) {
-    if (i == 10) return('HIGH')
-    if (i == 20) return('MEDIUM')
-    if (i == 30) return('LOW')
+    if (i == 2) return('HIGH')
+    if (i == 1) return('MEDIUM')
+    if (i == 0) return('LOW')
   }
-  'Pending'
+
 }
 
 shinyApp(
@@ -37,11 +33,11 @@ shinyApp(
     tags$head(tags$style('body {background-color: #FFFFEF; }')),
     theme = shinythemes::shinytheme('yeti'),
     # Application title
-    titlePanel('Human Trafficking'),
+    titlePanel('DSX PoT - Supply Chain Analysis'),
     sidebarLayout(
       sidebarPanel(
         width = 3,
-        plotlyOutput('vettingPie', height = 450),
+        plotlyOutput('severityPie', height = 450),
         conditionalPanel(
           condition="(typeof input.tbl_rows_selected !== 'undefined' && input.tbl_rows_selected.length > 0)", hr(),
           verbatimTextOutput('selectionDetails'),
@@ -49,14 +45,14 @@ shinyApp(
             fluidRow(
               column(
                 width=6, radioButtons(
-                  'vetting', label='Vetting Level',
-                  choices=c('Pending' = 100, 'HIGH' = 10, 'MEDIUM' = 20, 'LOW' = 30)
+                  'severity', label='Severity',
+                  choices=c('HIGH' = 2, 'MEDIUM' = 1, 'LOW' = 0)
                 )
               )
             )
           ),
-          actionButton('saveVetting', label = 'Save', icon = icon('save', lib = 'glyphicon')),
-          actionButton('entityProfile', label='Entity Profile', icon=icon('id-card-o'))
+          actionButton('saveSeverity', label = 'Save', icon = icon('save', lib = 'glyphicon')),
+          actionButton('reportProfile', label='Report Profile', icon=icon('id-card-o'))
         )
       ),
       mainPanel(
@@ -89,10 +85,10 @@ shinyApp(
     # Close the DB connection when the session ends
     cancel.onSessionEnded <- session$onSessionEnded(function() { idaClose(conn) })
     
-    # Query to update the vetting
-    updateVetting <- function(id, vetting) {
+    # Query to update the severity
+    updateSeverity <- function(lcn, severity) {
       idaQuery(
-        paste0('UPDATE ', vetting.table, ' SET "VETTING_LEVEL" = ', vetting, ' WHERE "UUID" = \'', id, '\'')
+        paste0('UPDATE ', data.table, ' SET "Severity" = ', severity, ' WHERE "LCN" = \'', lcn, '\'')
       )
     }
     
@@ -101,8 +97,7 @@ shinyApp(
       data = {
          df <- idaQuery(
             paste0(
-            'SELECT * FROM ', vetting.table, ' T1 LEFT JOIN ', vetting.table, '_ML_RESULTS T2 USING (UUID)',
-            ' ORDER BY VETTING_LEVEL, NAME'
+            'SELECT * FROM ', data.table, ' '
           )
         )
         df
@@ -117,41 +112,36 @@ shinyApp(
       df <- v$data
       selected <- v$data.selected
       shiny::validate(need(!is.null(df) && !is.null(selected), 'Nothing selected.'))
-      updateRadioButtons(session, 'vetting', selected = df$VETTING_LEVEL[[selected]])
+      updateRadioButtons(session, 'severity', selected = df$Severity[[selected]])
       paste0(
-        'Name: ', df$NAME[[selected]],
-        '\nGender: ', {switch(toupper(df$GENDER[[selected]]), F = 'Female', M = 'Male', 'Unknown')},
-        '\nAge: ', df$AGE[[selected]],
-        '\nBirth Country: ', df$BIRTH_COUNTRY[[selected]],
-        '\nPassport Country: ', df$PASSPORT_COUNTRY[[selected]],
-        '\nOccupation: ', df$OCCUPATION[[selected]],
-        '\nCountries Visited: ', df$COUNTRIES_VISITED_COUNT[[selected]], ' (', df$COUNTRIES_VISITED[[selected]], ')',
-        '\nCurrent Vetting: ', category.as.string(df$VETTING_LEVEL[[selected]]),
-        '\nVetting Prediction: ', category.as.string(df$predCategory[[selected]])
+        '\nTitle: ', df$Title[[selected]],
+        '\nReport Type: ', df$Report_Type[[selected]],
+        '\nCategory: ', df$Category[[selected]],
+        '\nLCN: ', df$LCN[[selected]],
+        '\nPart Number: ', df$Part_Number[[selected]],
+        '\nSeverity: ', df$Severity[[selected]]
       )
     })
     
     profileModal <- function(df, selected) {
       showModal(
         modalDialog(
-          title=paste0('Profile for ', df$NAME[[selected]]),
+          title=paste0('Profile for Action Request'),
           size='l',
           easyClose=TRUE,
           fluidRow(
             column(
               width=4,
-              shiny::img(
-                src=ifelse(df$GENDER[[selected]] == 'F', 'avatar_female.jpg', 'avatar_male.jpg'),height=240, width=240
-              )
             ),
             column(
               width=8,
               HTML({
                 result <- '<h4>'
-                result <- paste0(result, 'Address: ', df$ADDRESS[[selected]], br())
-                result <- paste0(result, 'National ID: ', df$SSN[[selected]], br())
-                result <- paste0(result, 'Occupation: ', df$OCCUPATION[[selected]], br())
-                result <- paste0(result, 'Birth Date: ', df$BIRTH_DATE[[selected]], ' (', df$AGE[[selected]], ')', br())
+                result <- paste0(result, 'Title: ', df$Title[[selected]], br())
+                result <- paste0(result, 'Category: ', df$Category[[selected]], br())
+                result <- paste0(result, 'Report Type: ', df$Report_Type[[selected]], br())
+                result <- paste0(result, 'Part Number: ', df$Part_Number[[selected]], br())
+                result <- paste0(result, 'LCN: ', df$LCN[[selected]], br())
                 paste0(result, '</h4>')
               })
             )
@@ -160,7 +150,7 @@ shinyApp(
       )
     }
     
-    observeEvent(input$entityProfile, {
+    observeEvent(input$reportProfile, {
       isolate({
         df <- v$data
         selected <- v$data.selected
@@ -169,46 +159,36 @@ shinyApp(
       })
     })
     
-    # When the data changes, update the vetting pie graph
-    output$vettingPie <- renderPlotly({
+    # When the data changes, update the severity pie graph
+    output$severityPie <- renderPlotly({
       df <- v$data
       shiny::validate(need(is.data.frame(df) && nrow(df) > 0, 'No results.'))
       withProgress(
         message = 'Rendering pie graph',  {
-          colors <- c(darkred, coral, darkgreen, brown2, darkgoldenrod4, darkolivegreen4, gray)
+          colors <- c(darkred, darkgreen, darkgoldenrod4)
           plot_ly(
             {
               df <- rbind({
-                # Vetted
-                vettedDf <- df[df$VETTING_LEVEL != 100,]
-                vettedDf <- as.data.frame(table(vettedDf$VETTING_LEVEL))
-                vettedDf$Var1 <- plyr::revalue(
-                  warn_missing = FALSE, as.character(vettedDf$Var1),
-                  c('10' = 'HIGH VETTED', '20' = 'MEDIUM VETTED', '30' = 'LOW VETTED')
+                # Severity levels
+                severityDf <- as.data.frame(table(df$Severity))
+                severityDf$Var1 <- plyr::revalue(
+                  warn_missing = FALSE, as.character(severityDf$Var1),
+                  c('High' = 'High Severity', 'Medium' = 'Medium Severity', 'Low' = 'Low Severity')
                 )
-                vettedDf
-              }, {
-                # Predicted
-                predictedDf <- df[df$VETTING_LEVEL == 100,]
-                predictedDf <- as.data.frame(table(as.integer(predictedDf$predCategory)))
-                predictedDf$Var1 <- plyr::revalue(
-                  warn_missing = FALSE, as.character(predictedDf$Var1),
-                  c('10' = 'HIGH PREDICTED', '20' = 'MEDIUM PREDICTED', '30' = 'LOW PREDICTED', '100' = 'Pending')
-                )
-                predictedDf
+                severityDf
               })
-              names(df)[names(df) == 'Var1'] <- 'Vetting'
-              df$Vetting <- factor(
-                df$Vetting,
-                c('HIGH VETTED', 'MEDIUM VETTED', 'LOW VETTED', 'HIGH PREDICTED', 'MEDIUM PREDICTED', 'LOW PREDICTED', 'Pending')
+              names(df)[names(df) == 'Var1'] <- 'Severity'
+              df$Severity <- factor(
+                df$Severity,
+                c('High Severity', 'Medium Severity', 'Low Severity')
               )
               df
-            }, labels = ~Vetting, values = ~Freq, type = 'pie',
+            }, labels = ~Severity, values = ~Freq, type = 'pie',
             textposition = 'inside',
             textinfo = 'label+percent',
             insidetextfont = list(color = '#FFFFFF'),
             hoverinfo = 'label+text+percent',
-            source = 'vettingPie',
+            source = 'severityPie',
             text = ~paste(Freq),
             marker = list(colors = colors, line = list(color = '#FFFFFF', width = 1))
           ) %>% plotly::config(displaylogo = FALSE, collaborate = FALSE) %>%
@@ -219,14 +199,14 @@ shinyApp(
         })
     })
     
-    observeEvent(input$saveVetting, {
-      vetting <- as.integer(isolate(input$vetting))
-      id <- isolate(v$data$UUID[v$data.selected[1]])
-      if (!is.na(id)) {
+    observeEvent(input$saveSeverity, {
+      severity <- as.integer(isolate(input$severity))
+      lcn <- isolate(v$data$LCN[v$data.selected[1]])
+      if (!is.na(lcn)) {
         withProgress(
-          message = 'Saving vetting', detail = category.as.string(vetting), {
-            v$data$VETTING_LEVEL[v$data.selected[1]] <- vetting
-            updateVetting(id, vetting)
+          message = 'Saving severity', detail = category.as.string(severity), {
+            v$data$Severity[v$data.selected[1]] <- severity
+            updateSeverity(lcn, severity)
           }
         )
       }
