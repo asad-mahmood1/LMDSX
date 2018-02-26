@@ -17,4 +17,4 @@ Upon completing the lab, you will:
 
 ### Please click on the link below and then press the `Download` button to download the instructions to your machine.
 
-[Instructions](https://github.com/jpatter/DSX/blob/master/Lab-4/WatsonMachineLearning.pdf). 
+[Instructions](https://github.com/cerebralace/LMDSX/blob/master/Lab-3/WatsonMachineLearning.pdf). 
