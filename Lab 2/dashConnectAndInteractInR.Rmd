@@ -19,7 +19,7 @@ if(length(new.packages)) install.packages(new.packages)
 lapply(list.of.packages, function(x){library(x, character.only = TRUE, warn.conflicts = FALSE, quietly = TRUE)})
 ```
 
-Establish a connection to DB2 Warehouse. You'll need to fill in details of your dashDB instance in the connection.R file (if you haven't done so already) the DB2 Warehouse instance's hostname, user ID (uid) and password (pwd) as well as the name of the vetting table.
+Establish a connection to DB2 Warehouse. You'll need to fill in details of your dashDB instance in the connection.R file (if you haven't done so already) the DB2 Warehouse instance's hostname, user ID (uid) and password (pwd) as well as the name of the data table.
 
 ```{r}
 # Get connection details
@@ -46,70 +46,57 @@ idaShowTables()
 ```
 
 ```{r}
-# Load the desired table into a data frame.  Note: vetting.table is assigned in connection.R.
-idadf = ida.data.frame(vetting.table)
+# Load the desired table into a data frame.  Note: data.table is assigned in connection.R.
+idadf = ida.data.frame(data.table)
 
 # Show the table dimensions
 dim(idadf)
 ```
 
-Examine the first few rows of the vetting and vetting predictions tables.
+Examine the first few rows of the supply chain data table.
 
 ```{r}
-# Show the first few records in the vetting table data frame and in the vetting predictions table
+# Show the first few records in the data table with the head() function
 head(idadf)
 ```
 
-Join the vetting table with the vetting predictions table.
+Create a new data frame to perform visualizations.
 
 ```{r}
-# Join the ML predictions with the vetting table using the UUID
-predicted = as.data.frame(
+# Create a new data frame and add the supply chain dataset
+supplychaindata = as.data.frame(
   idaQuery(
-    'SELECT * FROM ', vetting.table, ' LEFT JOIN ', vetting.table, '_ML_RESULTS USING (UUID)',
-    ' ORDER BY VETTING_LEVEL, NAME'
+    'SELECT * FROM ', data.table, ' '
   )
 )
 
-# Show the first few records in the joined data frame
-head(predicted)
+# Show the first few records in the new data frame
+head(supplychaindata)
 ```
 
 Create a few quick plots to get an understanding of what's in the data.
 
 ```{r}
-# Create a bar plot showing the counts of AGE and COUNTRIES_VISITED_COUNT
-qplot(AGE, data = predicted, geom = 'bar')
-qplot(COUNTRIES_VISITED_COUNT, data = predicted, geom = 'bar')
+# Create a bar plot showing the counts of Category and LCN
+qplot(Category, data = supplychaindata, geom = 'bar')
+qplot(LCN, data = supplychaindata, geom = 'bar')
 
-# Create a bar plot showing the counts (on a logarithmic scale) of BIRTH_COUNTRY
-qplot(BIRTH_COUNTRY, data = predicted, geom = 'bar', log = 'y')
 ```
 
-Create category names from the numerical levels used in VETTING and PREDICTED_VETTING.
+Display only certain columns in the supply chain data table.
 
 ```{r}
-# Convert the VETTING_LEVEL and predCategory values into their category names and store the results in VETTING and PREDICTED_VETTING, respectively
-predicted$VETTING <- plyr::revalue(
-  warn_missing = FALSE, as.character(predicted$VETTING_LEVEL),
-  c('10' = 'HIGH VETTED', '20' = 'MEDIUM VETTED', '30' = 'LOW VETTED', '100'='Pending')
-)
-predicted$predCategory[is.na(predicted$predCategory)] <- 100
-predicted$PREDICTED_VETTING <- plyr::revalue(
-  warn_missing = FALSE, as.character(as.integer(predicted$predCategory)),
-  c('10'='HIGH PREDICTED', '20'='MEDIUM PREDICTED', '30'='LOW PREDICTED', '100'='Pending')
-)
 
-# Show a few columns of the first few records
-head(predicted[c('NAME', 'AGE', 'COUNTRIES_VISITED', 'BIRTH_COUNTRY', 'VETTING', 'PREDICTED_VETTING')])
+# Show only the following columns of the first few records: Report_Type, Category, LCN and Severity
+head(supplychaindata[c('Report Type', 'Category', 'LCN', 'Severity')])
 ```
 
-Graph the vetting and predicted vetting categories.
+Graph only the severity level category.
 
 ```{r}
-# Create a bar plot showing the counts (on a logarithmic scale) of VETTING and PREDICTED_VETTING
-qplot(VETTING, data = predicted, geom = 'bar', log = 'y')
-qplot(PREDICTED_VETTING, data = predicted, geom = 'bar', log = 'y')
+# Create a bar plot showing the counts of the severity level
+qplot(Severity, data = supplychaindata, geom = 'bar')
+
 ```
 
 Close the database connection.
