@@ -4,7 +4,7 @@
 
 [<img src="https://github.com/jpatter/LMCO/blob/master/Lab-1/images/DB2Warehouse.png" height="150"/>](https://www.ibm.com/analytics/us/en/technology/cloud-data-services/dashdb/) [<img src="https://raw.githubusercontent.com/Davin-IBM/Proof-of-Technology/master/DSX/images/RStudio2.png"/>](https://www.rstudio.com/) [<img src="https://raw.githubusercontent.com/Davin-IBM/Proof-of-Technology/master/DSX/images/shiny.png"/>](https://shiny.rstudio.com/)
 
-In this lab, you will learn some of the fundamentals of using RStudio and Shiny in DSX to work and interact with data in DB2 Warehouse and then to create a fully operational "reactive" web application that you can enhance further.
+In this lab, you will learn some of the fundamentals of using RStudio and Shiny in DSX to work and interact with data in DB2 Warehouse and then create a fully operational "reactive" web application that you can enhance further.
 
 ## Objectives:
 
@@ -13,10 +13,10 @@ Upon completing the lab, you will know how to:
 1. Create an RStudio project from a Git repository
 1. Establish a connection to DB2 Warehouse
 1. Query, explore and visualize data in an R notebook
-1. Use ggplot2 to create bar plots of several of the columns in an R dataframe
+1. Use ggplot2 to create bar plots of several columns in an R dataframe
 1. Close the database connection
 1. Leverage shiny to create and run a web application
-1. Interact with the shiny web web application by runnng it externally
+1. Interact with the shiny web web application by running it externally
 
 ## Instructions:
 
