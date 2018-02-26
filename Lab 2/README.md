@@ -44,7 +44,7 @@ After the project gets created, you'll see a screen similar to the following:
 ### Step 6.  In the files pane in the lower right of the RStudio IDE, click `Lab-2`.
 > <img src="https://s10.postimg.org/81zymq009/Lab_2_Files_Pane.png"/>
 
-### Step 7.  Click the `connection.R` file and fill in your DB2 Warehouse connection details.   You can find these from one of the previous labs.   Don't forget to set data.table to 'SUPPLYCHAIN'. Save the file.
+### Step 7.  Click the `connection.R` file and fill in your DB2 Warehouse connection details.   You can find these from one of the previous labs. Save the file.
 > <img src="https://s10.postimg.org/cnw2v2t95/connection.R_screenshot.png"/>
 
 ### Step 8.  Click the `dashConnectAndInteractInR.R` file in the files pane in the lower right of the RStudio IDE and run the cells in sequence from top to bottom in the notebook using the `Run current chunk` (green triangle) button in the top right of each cell.
