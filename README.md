@@ -11,7 +11,7 @@ Use IBM’s Data Science Experience (DSX) and IBM cloud services to create a wor
 
 1. [Lab-1](Lab-1) - The first lab will begin with loading raw delimited data into DB2 Warehouse for Cloud and interacting with that data from a Jupyter notebook in DSX with python.
 
-1. [Lab-2](Lab 2) - The second lab will guide participants in creating an R notebook and Shiny UI in DSX using RStudio.
+1. [Lab-2](https://github.com/cerebralace/LMDSX/tree/master/Lab 2) - The second lab will guide participants in creating an R notebook and Shiny UI in DSX using RStudio.
 
 1. [Lab-3](Lab-3) - The third lab will show how to use the Watson Machine Learning capability to create a machine learning model based on the supply chain data set. The machine learning model, deployed in the IBM Cloud, will be used to predict the severity level of each discrepancy based on action request characteristics. 
 
